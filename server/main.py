@@ -12,26 +12,8 @@ def onlineCheck():
 def uplinkMessage(message):
   sect = len(uplinkedMessages)
   uplinkedMessages.append({'content':message,'serversSent':[],'serversReceived':[],'serversFailed':[]})
-  for server in otherServers:
-    try:
-      data = requests.get("http://"+server+'/sendCheck',params={"checksum":md5(message.encode()).hexdigest()}).content
-      if data == True:
-        print('Server '+server+' data correctly received.')
-      else:
-        print('Server '+ server+' data failure.')
-      uplinkedMessages[sect]['serversSent'].append(server)
-    except requests.exceptions.ConnectionError:
-      print('Server '+server+' is offline.')
-      uplinkedMessages[sect]['serversFailed'].append(server)
   return uplinkedMessages[sect]
   
-@app.get('/sendCheck')
-def sendCheck(checksum):
-  if checksum == md5(uplinkedMessages[len(uplinkedMessages)]['content']):
-    return True
-  else:
-    return False
-
 @app.get('/receiveMessages')
 def receiveMessage():
   tr = []
