@@ -25,21 +25,26 @@ def onlineCheck():
   return {"status": "online"}
 
 @app.get('/uplinkMessage')
-def uplinkMessage(message):
+def uplinkMessage(message,sender=None):
   sect = len(uplinkedMessages)
-  uplinkedMessages.append({'content':message,'serversSent':[],'serversReceived':[],'serversFailed':[]})
+  if sender == None:
+    sender = "Anonymous User"
+  uplinkedMessages.append({'content':message,'serversSent':[],'serversReceived':[],'serversFailed':[],"sender":sender})
   return uplinkedMessages[sect]
   
 @app.get('/receiveMessages')
 def receiveMessage():
   tr = []
   for uplinkedMessage in uplinkedMessages:
-    for server in otherServers:
-      try:
-        requests.get('http://'+server+'/messageDelete',params={"td":uplinkedMessages.index(uplinkedMessage)})
-      except requests.exceptions.ConnectionError:
-        print('Server '+server+' is offline.')
-    tr.append(uplinkedMessage['content'])
+    if "".join(otherServers) == "":
+      pass
+    else:
+      for server in otherServers:
+        try:
+          requests.get('http://'+server+'/messageDelete',params={"td":uplinkedMessages.index(uplinkedMessage)})
+        except requests.exceptions.ConnectionError:
+          print('Server '+server+' is offline.')
+    tr.append({"content":uplinkedMessage['content'],"sender":uplinkedMessage['sender']})
     del uplinkedMessages[uplinkedMessages.index(uplinkedMessage)]
   return tr
 
