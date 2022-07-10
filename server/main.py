@@ -5,6 +5,7 @@ from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
 from fastapi import Request
 import whatismyip
+
 otherServers = []
 print('This instance\'s IP is '+whatismyip.whatismyip())
 otherServers = input('What is the other instance\'s IPs: ').split(',')
@@ -53,3 +54,7 @@ def receiveMessage():
 def messageDelete(td:int):
   del uplinkedMessages[td]
   return True
+
+@app.get('/integrityTest')
+def integrityTest():
+  return '"'+md5(open('main.py','r').read().encode()).hexdigest()+'"'

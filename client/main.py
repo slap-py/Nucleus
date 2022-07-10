@@ -77,7 +77,25 @@ while True:
         print("Server "+server+" is online. Latency: "+str(round((lba-lbf)*1000,1))+"ms")
       except requests.exceptions.RequestException as e:
         print("Server "+server+" is offline.",str(e))
-
+  
+  elif option == "4":
+    print("--BACKEND MODE--")
+    backend = input("Would you like to commense a File Integrity Test? ")
+    if backend == "1":
+      print("--FILE INTEGRITY TEST--")
+      checksums = []
+      for server in servers:
+        try:
+          integTest = requests.get('http://'+server+'/integrityTest')
+        except requests.exceptions.RequestException:
+          print("Server "+server+" is offline.")
+        checksums.append(integTest.json())
+        cs = []
+        [cs.append(x) for x in checksums if x not in cs]
+        if len(cs) == 1:
+          print("--INTEGRITY TEST PASSED--")
+        else:
+          print("--INTEGRITY TEST FAILED--")
   else:
     print("Invalid option")
     exit()
